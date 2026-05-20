@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Anhad Grover — Data Scientist</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #22222e;
+    --accent: #7c6aff;
+    --accent2: #ff6a7c;
+    --accent3: #6affd4;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --highlight: #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* GRADIENT ORBS */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -200px; animation: drift1 18s ease-in-out infinite alternate; }
+  .orb-2 { width: 500px; height: 500px; background: var(--accent2); bottom: -150px; right: -150px; animation: drift2 22s ease-in-out infinite alternate; }
+  .orb-3 { width: 400px; height: 400px; background: var(--accent3); top: 40%; left: 50%; animation: drift3 15s ease-in-out infinite alternate; }
+
+  @keyframes drift1 { to { transform: translate(60px, 80px); } }
+  @keyframes drift2 { to { transform: translate(-80px, -60px); } }
+  @keyframes drift3 { to { transform: translate(-60px, 60px); } }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 4rem;
+    background: rgba(10,10,15,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    color: var(--highlight);
+  }
+
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 4rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--highlight);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero h1 .line2 { color: var(--accent); display: block; }
+
+  .hero-desc {
+    max-width: 520px;
+    font-size: 1.05rem;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-desc strong { color: var(--text); font-weight: 500; }
+
+  .hero-ctas {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.8rem;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #9480ff; transform: translateY(-2px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 5rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.2rem;
+    color: var(--highlight);
+    line-height: 1;
+  }
+
+  .stat-num span { color: var(--accent); }
+  .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.3rem; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* CONTAINER */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5rem 4rem;
+  }
+
+  /* SECTION HEADER */
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    letter-spacing: -0.03em;
+    color: var(--highlight);
+    margin-bottom: 3rem;
+    line-height: 1.1;
+  }
+
+  /* EXPERIENCE */
+  .exp-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .exp-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .exp-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .exp-card:hover { border-color: var(--accent); transform: translateX(4px); }
+  .exp-card:hover::before { opacity: 1; }
+
+  .exp-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+
+  .exp-company {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--highlight);
+  }
+
+  .exp-role {
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-top: 0.2rem;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .exp-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    background: var(--surface);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .exp-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 3px;
+    background: rgba(124,106,255,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(124,106,255,0.25);
+    letter-spacing: 0.03em;
+  }
+
+  .tag.green {
+    background: rgba(106,255,212,0.08);
+    color: var(--accent3);
+    border-color: rgba(106,255,212,0.2);
+  }
+
+  .tag.red {
+    background: rgba(255,106,124,0.08);
+    color: var(--accent2);
+    border-color: rgba(255,106,124,0.2);
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .proj-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .proj-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(124,106,255,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .proj-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .proj-card:hover::after { opacity: 1; }
+
+  .proj-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .proj-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--highlight);
+    margin-bottom: 0.6rem;
+  }
+
+  .proj-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+  }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-group {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .skill-group-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .skill-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  .skill-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 3px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+
+  .skill-pill:hover {
+    background: rgba(124,106,255,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* PUBLICATIONS */
+  .pub-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .pub-card:hover { border-color: var(--accent3); }
+
+  .pub-badge {
+    background: rgba(106,255,212,0.1);
+    border: 1px solid rgba(106,255,212,0.25);
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 3px;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+
+  .pub-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--highlight);
+    margin-bottom: 0.4rem;
+  }
+
+  .pub-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  /* AWARDS */
+  .awards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .award-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .award-card:hover { border-color: var(--accent2); transform: translateY(-3px); }
+
+  .award-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+
+  .award-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--highlight);
+    margin-bottom: 0.3rem;
+    line-height: 1.4;
+  }
+
+  .award-org {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contact-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .contact-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--highlight);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .contact-title span { color: var(--accent); }
+
+  .contact-subtitle { color: var(--muted); font-size: 0.95rem; }
+
+  .contact-links { display: flex; flex-direction: column; gap: 1rem; }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateX(4px); }
+
+  .contact-link-icon {
+    font-size: 1.2rem;
+    width: 2rem;
+    text-align: center;
+  }
+
+  .contact-link-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 0.1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 4rem;
+  }
+
+  /* SCROLL ANIMATIONS */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 7rem 1.5rem 3rem; }
+    .container { padding: 4rem 1.5rem; }
+    .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+    .contact-inner { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
+    .divider { margin: 0 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background Orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AG<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#publications">Research</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#certifications">Certifications</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section>
+  <div class="hero">
+    <p class="hero-tag">// Data Scientist · Delhi, India · Immediate Joiner</p>
+    <h1>Anhad<br/><span class="line2">Grover</span></h1>
+    <p class="hero-desc">
+      <strong>Published ML researcher</strong> and Data Scientist with hands-on experience in recommendation systems, pricing models, and ML pipelines at <strong>Snapdeal</strong> and <strong>IIT Delhi</strong>.
+    </p>
+    <div class="hero-ctas">
+      <a href="mailto:anhadgrover120@gmail.com" class="btn btn-primary">✉ Get in Touch</a>
+      <a href="https://linkedin.com/in/anhadgrover" target="_blank" class="btn btn-outline">LinkedIn →</a>
+      <a href="https://github.com/Anhad23" target="_blank" class="btn btn-outline">GitHub →</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">1<span>+</span></div>
+        <div class="stat-label">Year Experience</div>
+      </div>
+      <div>
+        <div class="stat-num">3</div>
+        <div class="stat-label">Internships</div>
+      </div>
+      <div>
+        <div class="stat-num">2</div>
+        <div class="stat-label">Publications</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <p class="section-tag reveal">// 01 — Professional Experience</p>
+    <h2 class="section-title reveal">Where I've<br/>Worked</h2>
+
+    <div class="exp-grid">
+
+      <div class="exp-card reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">Snapdeal</div>
+            <div class="exp-role">Data Scientist Intern</div>
+          </div>
+          <div class="exp-date">Oct 2025 – Mar 2026</div>
+        </div>
+        <p class="exp-desc">
+          Built and deployed product recommendation systems using Word2Vec, FAISS, and XGBoost, improving personalised ranking at scale. Developed a price elasticity model via log-log regression and gradient boosting, delivering actionable pricing strategy insights. Designed a production-ready uplift scoring pipeline for predicting revenue impact of promotions. Engineered scalable SQL pipelines on Databricks processing millions of user interactions.
+        </p>
+        <div class="tag-row">
+          <span class="tag">Python</span>
+          <span class="tag">XGBoost</span>
+          <span class="tag">Word2Vec</span>
+          <span class="tag">FAISS</span>
+          <span class="tag">SQL</span>
+          <span class="tag">Databricks</span>
+          <span class="tag">Gradient Boosting</span>
+        </div>
+      </div>
+
+      <div class="exp-card reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">IIT Delhi</div>
+            <div class="exp-role">Research Intern — Drug Susceptibility Modelling</div>
+          </div>
+          <div class="exp-date">Apr 2025 – Sep 2025</div>
+        </div>
+        <p class="exp-desc">
+          Processed and analysed 170,000+ protein structures to extract predictive features for drug susceptibility modelling. Designed a custom scoring function reducing candidates from 170K to ~1,100. Built XGBoost classifiers achieving &gt;95% accuracy. Co-authored ongoing publication on TT Fields exposure.
+        </p>
+        <div class="tag-row">
+          <span class="tag green">Python</span>
+          <span class="tag green">XGBoost</span>
+          <span class="tag green">Scikit-learn</span>
+          <span class="tag green">Feature Engineering</span>
+        </div>
+      </div>
+
+      <div class="exp-card reveal">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">IIT Delhi</div>
+            <div class="exp-role">Machine Learning Intern — HPC Job Scheduling</div>
+          </div>
+          <div class="exp-date">Jun 2023 – Aug 2023</div>
+        </div>
+        <p class="exp-desc">
+          Developed Random Forest models to predict HPC job wait times, reducing prediction error by 30% through hyperparameter tuning. Achieved 98% model accuracy, directly improving job scheduling efficiency. Deployed a Python-based automation pipeline increasing throughput by 20–25%.
+        </p>
+        <div class="tag-row">
+          <span class="tag red">Python</span>
+          <span class="tag red">Random Forest</span>
+          <span class="tag red">Scikit-learn</span>
+          <span class="tag red">Pipeline Automation</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <p class="section-tag reveal">// 02 — Projects</p>
+    <h2 class="section-title reveal">Things I've<br/>Built</h2>
+
+    <div class="projects-grid">
+
+      <div class="proj-card reveal">
+        <div class="proj-icon">🐄</div>
+        <div class="proj-title">GaushalaNet</div>
+        <p class="proj-desc">Smart Gaushala Management System built with Streamlit using CNN and YOLO for automated cattle identification, health monitoring, and record tracking.</p>
+        <div class="tag-row">
+          <span class="tag">CNN</span>
+          <span class="tag">YOLO</span>
+          <span class="tag">Streamlit</span>
+          <span class="tag">Python</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <div class="proj-icon">🧠</div>
+        <div class="proj-title">Depression & Alzheimer's Research</div>
+        <p class="proj-desc">Gene enrichment and network analysis using Python to identify overlapping genetic markers between depression and Alzheimer's disease, supporting early diagnosis research.</p>
+        <div class="tag-row">
+          <span class="tag">Python</span>
+          <span class="tag">Network Analysis</span>
+          <span class="tag">Bioinformatics</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <div class="proj-icon">🌿</div>
+        <div class="proj-title">Smart Herbal Recognition</div>
+        <p class="proj-desc">Mobile-optimised CNN model for real-time classification of medicinal plants, enabling field-level research and conservation at scale.</p>
+        <div class="tag-row">
+          <span class="tag">CNN</span>
+          <span class="tag">PyTorch</span>
+          <span class="tag">Mobile ML</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <div class="proj-icon">💊</div>
+        <div class="proj-title">ALS Progression Modelling</div>
+        <p class="proj-desc">Published XGBoost approach for predictive modelling of ALS progression using clinical features — published in Springer Nature / BioData Mining (December 2024).</p>
+        <div class="tag-row">
+          <span class="tag green">XGBoost</span>
+          <span class="tag green">Clinical ML</span>
+          <span class="tag green">Published</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <p class="section-tag reveal">// 03 — Skills</p>
+    <h2 class="section-title reveal">Technical<br/>Expertise</h2>
+
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Languages</div>
+        <div class="skill-pills">
+          <span class="skill-pill">Python</span>
+          <span class="skill-pill">SQL</span>
+          <span class="skill-pill">C++</span>
+          <span class="skill-pill">Java</span>
+          <span class="skill-pill">C</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">ML Frameworks</div>
+        <div class="skill-pills">
+          <span class="skill-pill">XGBoost</span>
+          <span class="skill-pill">PyTorch</span>
+          <span class="skill-pill">TensorFlow</span>
+          <span class="skill-pill">Scikit-learn</span>
+          <span class="skill-pill">Word2Vec</span>
+          <span class="skill-pill">FAISS</span>
+          <span class="skill-pill">Random Forest</span>
+          <span class="skill-pill">Gradient Boosting</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Cloud & Tools</div>
+        <div class="skill-pills">
+          <span class="skill-pill">AWS</span>
+          <span class="skill-pill">Azure</span>
+          <span class="skill-pill">Databricks</span>
+          <span class="skill-pill">Git</span>
+          <span class="skill-pill">GitHub</span>
+          <span class="skill-pill">GitLab</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Analytics</div>
+        <div class="skill-pills">
+          <span class="skill-pill">Price Elasticity</span>
+          <span class="skill-pill">Uplift Modelling</span>
+          <span class="skill-pill">Feature Engineering</span>
+          <span class="skill-pill">ETL Pipelines</span>
+          <span class="skill-pill">Hyperparameter Tuning</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="container">
+    <p class="section-tag reveal">// 04 — Research</p>
+    <h2 class="section-title reveal">Publications</h2>
+
+    <div class="pub-card reveal">
+      <span class="pub-badge">PUBLISHED</span>
+      <div>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/39623504/" target="_blank" style="text-decoration:none;">
+          <div class="pub-title" style="color:var(--accent3);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Predictive Modelling of ALS Progression: An XGBoost Approach Using Clinical Features ↗</div>
+        </a>
+        <div class="pub-meta">Springer Nature / BioData Mining · December 2024</div>
+      </div>
+    </div>
+
+    <div class="pub-card reveal">
+      <span class="pub-badge" style="background:rgba(255,106,124,0.1);border-color:rgba(255,106,124,0.25);color:var(--accent2);">UNDER REVIEW</span>
+      <div>
+        <div class="pub-title">The Dynamics of Intracellular Charged Species on TT Fields Exposure</div>
+        <div class="pub-meta">IIT Delhi · 2025</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AWARDS -->
+<section id="awards">
+  <div class="container">
+    <p class="section-tag reveal">// 05 — Recognition</p>
+    <h2 class="section-title reveal">Awards</h2>
+
+    <div class="awards-grid">
+      <div class="award-card reveal">
+        <div class="award-icon">🥉</div>
+        <div class="award-title">2nd Runner-Up — Hack Riot 50 Hackathon</div>
+        <div class="award-org">Snapdeal · 2025</div>
+      </div>
+      <div class="award-card reveal">
+        <div class="award-icon">🏆</div>
+        <div class="award-title">Students Network Award</div>
+        <div class="award-org">IEEE Delhi Section · 2025</div>
+      </div>
+      <div class="award-card reveal">
+        <div class="award-icon">🎖️</div>
+        <div class="award-title">Dr J.K. Pal Memorial Award</div>
+        <div class="award-org">IEEE Delhi Section · 2025</div>
+      </div>
+      <div class="award-card reveal">
+        <div class="award-icon">⭐</div>
+        <div class="award-title">Outstanding Student Volunteer Award</div>
+        <div class="award-org">IEEE Delhi Section · 2024</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="container">
+    <p class="section-tag reveal">// 06 — Education</p>
+    <h2 class="section-title reveal">Academic<br/>Background</h2>
+
+    <div class="exp-card reveal">
+      <div class="exp-header">
+        <div>
+          <div class="exp-company">Jamia Hamdard University</div>
+          <div class="exp-role">B.Tech in Computer Science & Engineering</div>
+        </div>
+        <div class="exp-date">2021 – 2025</div>
+      </div>
+      <p class="exp-desc">Delhi, India &nbsp;·&nbsp; CGPA: 7.53 / 10</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="container">
+    <p class="section-tag reveal">// 07 — Certifications</p>
+    <h2 class="section-title reveal">Certified<br/>Learning</h2>
+
+    <div class="awards-grid">
+      <div class="award-card reveal" style="cursor:pointer;" onclick="window.open('https://s3-us-west-2.amazonaws.com/udacity-printer/production/certificates/f5569e6c-3e7c-4e51-a4f5-80b336824ca7.pdf','_blank')">
+        <div class="award-icon">☁️</div>
+        <div class="award-title">AWS Machine Learning Foundation</div>
+        <div class="award-org">Udacity · Nov 2022</div>
+        <div style="margin-top:0.6rem;font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--accent);">View Certificate ↗</div>
+      </div>
+      <div class="award-card reveal" style="cursor:pointer;" onclick="window.open('https://drive.google.com/file/d/1N8_4j7WTmkaA9xVYVC9xuu10hInQbdXI/view','_blank')">
+        <div class="award-icon">🗄️</div>
+        <div class="award-title">Introduction to Database Systems</div>
+        <div class="award-org">IIT Madras · NPTEL · Apr 2025</div>
+        <div style="margin-top:0.6rem;font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--accent);">View Certificate ↗</div>
+      </div>
+      <div class="award-card reveal" style="cursor:pointer;" onclick="window.open('https://drive.google.com/file/d/1NEIfLVWFmaOXQ_IzICEqD7HrIhg0vS70/view','_blank')">
+        <div class="award-icon">🌐</div>
+        <div class="award-title">Cloud Computing</div>
+        <div class="award-org">IIT Kharagpur · NPTEL · Apr 2025</div>
+        <div style="margin-top:0.6rem;font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--accent);">View Certificate ↗</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <div class="contact-inner">
+    <div class="reveal">
+      <h2 class="contact-title">Let's<br/><span>Connect</span></h2>
+      <p class="contact-subtitle">Open to Data Science, ML Engineering, and Analytics roles. Immediate joiner based in Delhi.</p>
+    </div>
+    <div class="contact-links reveal">
+      <a href="mailto:anhadgrover120@gmail.com" class="contact-link">
+        <span class="contact-link-icon">✉</span>
+        <div>
+          <span class="contact-link-label">Email</span>
+          anhadgrover120@gmail.com
+        </div>
+      </a>
+      <a href="https://linkedin.com/in/anhadgrover" target="_blank" class="contact-link">
+        <span class="contact-link-icon">in</span>
+        <div>
+          <span class="contact-link-label">LinkedIn</span>
+          linkedin.com/in/anhadgrover
+        </div>
+      </a>
+      <a href="tel:+919760937605" class="contact-link">
+        <span class="contact-link-icon">📞</span>
+        <div>
+          <span class="contact-link-label">Phone</span>
+          +91-9760937605
+        </div>
+      </a>
+      <a href="https://github.com/Anhad23" target="_blank" class="contact-link">
+        <span class="contact-link-icon">⌥</span>
+        <div>
+          <span class="contact-link-label">GitHub</span>
+          github.com/Anhad23
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Anhad Grover · Built with purpose</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
